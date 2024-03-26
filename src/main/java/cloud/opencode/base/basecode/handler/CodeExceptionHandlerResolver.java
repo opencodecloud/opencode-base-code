@@ -6,7 +6,6 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.apache.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
@@ -24,7 +23,6 @@ import java.text.SimpleDateFormat;
  * e-mail: ijonso123@gmail.com
  * url: <a href="https://jon.wiki">Jon's blog</a>
  * url: <a href="https://github.com/opencodecloud">project github</a>
- * @version v1.0.0
  */
 @Component
 public class CodeExceptionHandlerResolver implements HandlerExceptionResolver {
@@ -50,12 +48,8 @@ public class CodeExceptionHandlerResolver implements HandlerExceptionResolver {
     @Override
     public ModelAndView resolveException(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o, Exception e) {
         String message = e.getLocalizedMessage();
-        String errorInfo = e.getLocalizedMessage();
-        Integer code = HttpStatus.SC_INTERNAL_SERVER_ERROR;
         if (e instanceof CodeException) {
             CodeException ce = (CodeException) e;
-            code = ce.getCode();
-            errorInfo = ce.getErrorInfo();
             message = ce.getMessage();
         }
 
@@ -79,7 +73,7 @@ public class CodeExceptionHandlerResolver implements HandlerExceptionResolver {
             httpServletResponse.getWriter()
                     .write(
                             OBJECT_MAPPER.writeValueAsString(
-                                    CodeResult.error(code, message, errorInfo)
+                                    CodeResult.ERROR(message, org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR)
                             )
                     );
         } catch (IOException ex) {

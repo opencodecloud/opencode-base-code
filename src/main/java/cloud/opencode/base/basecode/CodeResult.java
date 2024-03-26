@@ -3,247 +3,267 @@ package cloud.opencode.base.basecode;
 import cloud.opencode.base.basecode.enums.ResultMessageEnum;
 import cloud.opencode.base.basecode.enums.ResultStatusEnum;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import org.apache.http.HttpStatus;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
+import org.springframework.util.MultiValueMap;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
- * @author Jon So,
- * e-mail: ijonso123@gmail.com
+ * @author Jon
  * url: <a href="https://jon.wiki">Jon's blog</a>
- * url: <a href="https://github.com/opencodecloud">project github</a>
- * @version v1.0.0
+ * url: <a href="https://opencode.cloud">OpenCode.cloud</a>
  */
-@Data
-@AllArgsConstructor
+@Getter
+@Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class CodeResult<T> implements Serializable {
-    private static final long serialVersionUID = 6374486752803150412L;
+public class CodeResult<T> extends ResponseEntity<T> implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = -877545005334587795L;
     private T data;
     private Integer code;
     private String message;
-    private String errorInfo;
-    private ResultStatusEnum status;
     private Long total;
     private Long page;
     private Long pageSize;
 
-    public CodeResult() {
-        this.code = 0;
+    public CodeResult(HttpStatusCode status) {
+        super(status);
+        this.data = null;
+        this.code = ResultStatusEnum.SUCCESS.getCode();
         this.message = ResultMessageEnum.SYSTEM_OK.getValue();
-        this.errorInfo = null;
-        this.status = ResultStatusEnum.SUCCESS;
         this.total = null;
         this.page = null;
         this.pageSize = null;
     }
 
-    private CodeResult(Integer code, String message, ResultStatusEnum status) {
-        this.code = code;
-        this.message = message;
-        this.errorInfo = null;
-        this.status = status;
+    public CodeResult(@Nullable T body, HttpStatusCode status) {
+        super(body, status);
+        this.data = body;
+        this.code = null;
+        this.message = null;
         this.total = null;
         this.page = null;
         this.pageSize = null;
     }
 
-    private CodeResult(Integer code, String message, String errorInfo, ResultStatusEnum status) {
+    public CodeResult(@Nullable T body, HttpStatusCode status, @Nullable Integer code) {
+        super(body, status);
+        this.data = body;
         this.code = code;
-        this.message = message;
-        this.errorInfo = errorInfo;
-        this.status = status;
+        this.message = null;
         this.total = null;
         this.page = null;
         this.pageSize = null;
     }
 
-    private CodeResult(Integer code, String message, ResultStatusEnum status, T data) {
-        this.code = code;
-        this.message = message;
-        this.errorInfo = null;
-        this.status = status;
-        this.data = data;
+    public CodeResult(@Nullable MultiValueMap<String, String> headers, HttpStatusCode status) {
+        super(headers, status);
+        this.data = null;
+        this.code = null;
+        this.message = null;
         this.total = null;
         this.page = null;
         this.pageSize = null;
     }
 
-    private CodeResult(Integer code, String message, String errorInfo, ResultStatusEnum status, T data) {
-        this.code = code;
-        this.message = message;
-        this.errorInfo = errorInfo;
-        this.status = status;
-        this.data = data;
+    public CodeResult(@Nullable T body, MultiValueMap<String, String> headers, int rawStatus) {
+        super(body, headers, rawStatus);
+        this.data = body;
+        this.code = null;
+        this.message = null;
         this.total = null;
         this.page = null;
         this.pageSize = null;
     }
 
-    private CodeResult(Integer code, String message, ResultStatusEnum status, T data, long total, long page, long pageSize) {
-        this.code = code;
+    public CodeResult(@Nullable T body, MultiValueMap<String, String> headers, HttpStatusCode statusCode) {
+        super(body, headers, statusCode);
+        this.data = body;
+        this.code = null;
+        this.message = null;
+        this.total = null;
+        this.page = null;
+        this.pageSize = null;
+    }
+
+    public CodeResult(@Nullable T body, HttpStatusCode status, @Nullable String message) {
+        super(body, status);
+        this.data = body;
         this.message = message;
-        this.status = status;
-        this.data = data;
+        this.code = null;
+        this.total = null;
+        this.page = null;
+        this.pageSize = null;
+    }
+
+    public CodeResult(@Nullable T body, HttpStatusCode status, @Nullable String message, @Nullable Integer code) {
+        super(body, status);
+        this.data = body;
+        this.message = message;
+        this.code = code;
+        this.total = null;
+        this.page = null;
+        this.pageSize = null;
+    }
+
+    public CodeResult(@Nullable T body, HttpStatusCode status, @Nullable String message, @Nullable Long total, @Nullable Long page, @Nullable Long pageSize) {
+        super(body, status);
+        this.data = body;
+        this.message = message;
         this.total = total;
         this.page = page;
         this.pageSize = pageSize;
     }
 
-    /**
-     * Get CodeResult while error
-     *
-     * @param <T> the type of target
-     * @return CodeResult
-     */
-    public static <T> CodeResult<T> error() {
-        return new CodeResult(HttpStatus.SC_INTERNAL_SERVER_ERROR, ResultMessageEnum.SYSTEM_ERROR.getValue(), ResultStatusEnum.FAIL);
+    public CodeResult(@Nullable T body, HttpStatusCode status, @Nullable String message, @Nullable Long total, @Nullable Long page, @Nullable Long pageSize, @Nullable Integer code) {
+        super(body, status);
+        this.data = body;
+        this.message = message;
+        this.total = total;
+        this.page = page;
+        this.pageSize = pageSize;
+        this.code = code;
     }
 
     /**
-     * Get CodeResult while error
-     *
-     * @param message error message
-     * @param <T>     the type of target
-     * @return CodeResult
+     * OK
+     * @return
      */
-    public static <T> CodeResult<T> error(String message) {
-        return new CodeResult(HttpStatus.SC_INTERNAL_SERVER_ERROR, message, ResultStatusEnum.FAIL);
+    public static CodeResult OK() {
+        return new CodeResult(HttpStatusCode.valueOf(200));
     }
 
     /**
-     * Get CodeResult while error
-     *
-     * @param message   message error message
-     * @param errorInfo error info
-     * @param <T>       the type of target
-     * @return CodeResult
+     * OK
+     * @param data
+     * @return
+     * @param <T>
      */
-    public static <T> CodeResult<T> error(String message, String errorInfo) {
-        return new CodeResult(HttpStatus.SC_INTERNAL_SERVER_ERROR, message, errorInfo, ResultStatusEnum.FAIL);
+    public static <T> CodeResult OK(T data) {
+        return new CodeResult(data,HttpStatusCode.valueOf(200),ResultMessageEnum.SYSTEM_SUCCESS.getValue(),ResultStatusEnum.SUCCESS.getCode());
     }
 
     /**
-     * Get CodeResult while error
-     *
-     * @param code    error code
-     * @param message error message
-     * @param <T>     the type of target
-     * @return CodeResult
+     * OK
+     * @param data
+     * @param message
+     * @return
+     * @param <T>
      */
-    public static <T> CodeResult<T> error(int code, String message) {
-        return new CodeResult(code, message, ResultStatusEnum.FAIL);
+    public static <T> CodeResult OK(T data, String message) {
+        return new CodeResult(data, HttpStatusCode.valueOf(200), message,ResultStatusEnum.SUCCESS.getCode());
     }
 
     /**
-     * Get CodeResult while error
-     *
-     * @param code      error code
-     * @param message   error message
-     * @param errorInfo error info
-     * @param <T>       the type of target
-     * @return CodeResult
+     * OK
+     * @param data
+     * @param message
+     * @param code
+     * @return
+     * @param <T>
      */
-    public static <T> CodeResult<T> error(int code, String message, String errorInfo) {
-        return new CodeResult(code, message, errorInfo, ResultStatusEnum.FAIL);
+    public static <T> CodeResult OK(T data, String message, Integer code) {
+        return new CodeResult(data, HttpStatusCode.valueOf(200), message, code);
     }
 
     /**
-     * Get CodeResult just ok
-     *
-     * @param <T> the type of target
-     * @return CodeResult
+     * OK
+     * @param data
+     * @param message
+     * @param total
+     * @param page
+     * @param pageSize
+     * @return
+     * @param <T>
      */
-    public static <T> CodeResult<T> ok() {
-        return new CodeResult();
+    public static <T> CodeResult OK(T data, String message, Long total, Long page, Long pageSize) {
+        return new CodeResult(data, HttpStatusCode.valueOf(200), message, total, page, pageSize);
     }
 
     /**
-     * Get CodeResult only one param message
-     *
-     * @param message message
-     * @param <T>     the type of target
-     * @return CodeResult
+     * OK
+     * @param data
+     * @param message
+     * @param total
+     * @param page
+     * @param pageSize
+     * @param code
+     * @return
+     * @param <T>
      */
-    public static <T> CodeResult<T> ok(String message) {
-        return new CodeResult(0, message, ResultStatusEnum.SUCCESS);
+    public static <T> CodeResult OK(T data, String message, Long total, Long page, Long pageSize, Integer code) {
+        return new CodeResult(data, HttpStatusCode.valueOf(200), message, total, page, pageSize, code);
     }
 
     /**
-     * Get CodeResult for message and data
-     *
-     * @param message message
-     * @param data    data body
-     * @param <T>     the type of target
-     * @return CodeResult
+     * OK
+     * @param message
+     * @param code
+     * @return
      */
-    public static <T> CodeResult<T> ok(String message, T data) {
-        return new CodeResult(0, message, ResultStatusEnum.SUCCESS, data);
+    public static CodeResult OK(String message, Integer code) {
+        return new CodeResult(null, HttpStatusCode.valueOf(200), message, code);
     }
 
     /**
-     * Get CodeResult for message and data with page info
-     *
-     * @param message  message
-     * @param data     data
-     * @param total    total num
-     * @param page     page num
-     * @param pageSize pagesize
-     * @param <T>      data
-     * @return CodeResult
+     * OK
+     * @param body
+     * @param headers
+     * @param rawStatus
+     * @return
+     * @param <T>
      */
-    public static <T> CodeResult<T> ok(String message, T data, long total, long page, long pageSize) {
-        return new CodeResult(0, message, ResultStatusEnum.SUCCESS, data, total, page, pageSize);
+    public static <T> CodeResult OK(@Nullable T body, MultiValueMap<String, String> headers, int rawStatus) {
+        return new CodeResult(body, headers, rawStatus);
     }
 
     /**
-     * Get CodeResult only one param with data body
-     *
-     * @param data data body
-     * @param <T>  the type of target
-     * @return CodeResult
+     * OK
+     * @param headers
+     * @param status
+     * @return
      */
-    public static <T> CodeResult<T> okx(T data) {
-        return new CodeResult(0, ResultMessageEnum.SYSTEM_SUCCESS.getValue(), ResultStatusEnum.SUCCESS, data);
+    public static CodeResult OK(@Nullable MultiValueMap<String, String> headers, HttpStatusCode status) {
+        return new CodeResult(headers, HttpStatusCode.valueOf(status.value()));
     }
 
     /**
-     * Get CodeResult with data body and code
-     *
-     * @param data body
-     * @param code code
-     * @param <T>  the type of target
-     * @return CodeResult
+     * OK
+     * @param body
+     * @param headers
+     * @param statusCode
+     * @return
+     * @param <T>
      */
-    public static <T> CodeResult<T> okx(T data, int code) {
-        return new CodeResult(code, ResultMessageEnum.SYSTEM_SUCCESS.getValue(), ResultStatusEnum.SUCCESS, data);
+    public static <T> CodeResult OK(@Nullable T body, MultiValueMap<String, String> headers, HttpStatusCode statusCode) {
+        return new CodeResult(body, headers, statusCode);
+    }
+
+
+    /**
+     * ERROR
+     * @param message
+     * @param status
+     * @return
+     */
+    public static CodeResult ERROR(String message, HttpStatus status) {
+        return new CodeResult(null, HttpStatusCode.valueOf(status.value()), ResultStatusEnum.FAIL.getCode());
     }
 
     /**
-     * Get CodeResult with data body and message
-     *
-     * @param data    body
-     * @param message message
-     * @param <T>     the type of target
-     * @return CodeResult
+     * ERROR
+     * @param message
+     * @return
      */
-    public static <T> CodeResult<T> okx(T data, String message) {
-        return new CodeResult(0, message, ResultStatusEnum.SUCCESS, data);
-    }
-
-    /**
-     * Get CodeResult with data body, code, message
-     *
-     * @param data    body
-     * @param code    code
-     * @param message message
-     * @param <T>     the type of target
-     * @return CodeResult
-     */
-    public static <T> CodeResult<T> okx(T data, int code, String message) {
-        return new CodeResult(code, message, ResultStatusEnum.SUCCESS, data);
+    public static CodeResult ERROR(String message) {
+        return new CodeResult(null, HttpStatusCode.valueOf(400), message, ResultStatusEnum.FAIL.getCode());
     }
 
 }

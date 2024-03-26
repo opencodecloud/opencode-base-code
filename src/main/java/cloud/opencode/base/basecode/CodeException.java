@@ -5,18 +5,20 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.http.HttpStatus;
 
+import java.io.Serial;
+
 /**
  * @author Jon So,
  * e-mail: ijonso123@gmail.com
  * url: <a href="https://jon.wiki">Jon's blog</a>
  * url: <a href="https://github.com/opencodecloud">project github</a>
- * @version v1.0.0
  */
 @Getter
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CodeException extends RuntimeException {
-    private static final long serialVersionUID = 4056355647005042739L;
+    @Serial
+    private static final long serialVersionUID = 5611411175819097882L;
     private String message;
     private String errorInfo;
     private String status;
