@@ -5,14 +5,16 @@ import cloud.opencode.base.basecode.enums.ResultStatusEnum;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
 import org.springframework.lang.Nullable;
 import org.springframework.util.MultiValueMap;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * @author Jon
@@ -22,114 +24,93 @@ import java.io.Serializable;
 @Getter
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class CodeResult<T> extends ResponseEntity<T> implements Serializable {
-
+public class CodeResult<T>  implements Serializable {
     @Serial
-    private static final long serialVersionUID = -877545005334587795L;
+    private static final long serialVersionUID = -4239977605869432973L;
+    @Nullable
     private T data;
+    @Nullable
     private Integer code;
+    @Nullable
     private String message;
+    private HttpStatus status;
+    @Nullable
     private Long total;
+    @Nullable
     private Long page;
+    @Nullable
     private Long pageSize;
+    @Nullable
+    private HttpHeaders headers;
+    private long timestamp ;
+    @Nullable
+    private MediaType mediaType;
 
-    public CodeResult(HttpStatusCode status) {
-        super(status);
+    public CodeResult(@Nullable HttpStatus status) {
+        this.status = Objects.requireNonNullElse(status, HttpStatus.OK);
         this.data = null;
         this.code = ResultStatusEnum.SUCCESS.getCode();
         this.message = ResultMessageEnum.SYSTEM_OK.getValue();
+        this.mediaType = null;
+        this.headers =null;
         this.total = null;
         this.page = null;
         this.pageSize = null;
+        this.timestamp = System.currentTimeMillis();
     }
 
-    public CodeResult(@Nullable T body, HttpStatusCode status) {
-        super(body, status);
+
+    public CodeResult(@Nullable HttpStatus status,@Nullable T body) {
+        this.status = Objects.requireNonNullElse(status, HttpStatus.OK);
         this.data = body;
-        this.code = null;
-        this.message = null;
+        this.code = ResultStatusEnum.SUCCESS.getCode();
+        this.message = ResultMessageEnum.SYSTEM_OK.getValue();
+        this.mediaType = null;
+        this.headers =null;
         this.total = null;
         this.page = null;
         this.pageSize = null;
+        this.timestamp = System.currentTimeMillis();
     }
 
-    public CodeResult(@Nullable T body, HttpStatusCode status, @Nullable Integer code) {
-        super(body, status);
+    public CodeResult(@Nullable HttpStatus status, @Nullable T body, @Nullable String message, @Nullable Integer code) {
+        this.status = Objects.requireNonNullElse(status, HttpStatus.OK);
         this.data = body;
-        this.code = code;
-        this.message = null;
+        this.code = Objects.requireNonNullElseGet(code, ResultStatusEnum.SUCCESS::getCode);
+        this.message = Objects.requireNonNullElseGet(message, ResultMessageEnum.SYSTEM_OK::getValue);
+        this.mediaType = null;
+        this.headers =null;
         this.total = null;
         this.page = null;
         this.pageSize = null;
+        this.timestamp = System.currentTimeMillis();
     }
 
-    public CodeResult(@Nullable MultiValueMap<String, String> headers, HttpStatusCode status) {
-        super(headers, status);
-        this.data = null;
-        this.code = null;
-        this.message = null;
-        this.total = null;
-        this.page = null;
-        this.pageSize = null;
-    }
-
-    public CodeResult(@Nullable T body, MultiValueMap<String, String> headers, int rawStatus) {
-        super(body, headers, rawStatus);
+    public CodeResult(@Nullable HttpStatus status,@Nullable T body, @Nullable MediaType type, @Nullable MultiValueMap<String, String> headers ) {
+        this.status = Objects.requireNonNullElse(status, HttpStatus.OK);
         this.data = body;
-        this.code = null;
-        this.message = null;
+        this.code = ResultStatusEnum.SUCCESS.getCode();
+        this.message = ResultMessageEnum.SYSTEM_OK.getValue();
+        this.mediaType = type;
+        this.headers = HttpHeaders.readOnlyHttpHeaders(headers != null ? headers : new HttpHeaders());;
         this.total = null;
         this.page = null;
         this.pageSize = null;
+        this.timestamp = System.currentTimeMillis();
     }
 
-    public CodeResult(@Nullable T body, MultiValueMap<String, String> headers, HttpStatusCode statusCode) {
-        super(body, headers, statusCode);
-        this.data = body;
-        this.code = null;
-        this.message = null;
-        this.total = null;
-        this.page = null;
-        this.pageSize = null;
-    }
 
-    public CodeResult(@Nullable T body, HttpStatusCode status, @Nullable String message) {
-        super(body, status);
+    public CodeResult(@Nullable HttpStatus status, @Nullable T body, @Nullable Long total, @Nullable Long page, @Nullable Long pageSize,@Nullable String message, @Nullable Integer code,@Nullable MediaType type, @Nullable MultiValueMap<String, String> headers) {
+        this.status = Objects.requireNonNullElse(status, HttpStatus.OK);
         this.data = body;
-        this.message = message;
-        this.code = null;
-        this.total = null;
-        this.page = null;
-        this.pageSize = null;
-    }
-
-    public CodeResult(@Nullable T body, HttpStatusCode status, @Nullable String message, @Nullable Integer code) {
-        super(body, status);
-        this.data = body;
-        this.message = message;
-        this.code = code;
-        this.total = null;
-        this.page = null;
-        this.pageSize = null;
-    }
-
-    public CodeResult(@Nullable T body, HttpStatusCode status, @Nullable String message, @Nullable Long total, @Nullable Long page, @Nullable Long pageSize) {
-        super(body, status);
-        this.data = body;
-        this.message = message;
+        this.code = Objects.requireNonNullElseGet(code, ResultStatusEnum.SUCCESS::getCode);
+        this.message = Objects.requireNonNullElseGet(message, ResultMessageEnum.SYSTEM_OK::getValue);
+        this.mediaType = type;
+        this.headers = HttpHeaders.readOnlyHttpHeaders(headers != null ? headers : new HttpHeaders());;
         this.total = total;
         this.page = page;
         this.pageSize = pageSize;
-    }
-
-    public CodeResult(@Nullable T body, HttpStatusCode status, @Nullable String message, @Nullable Long total, @Nullable Long page, @Nullable Long pageSize, @Nullable Integer code) {
-        super(body, status);
-        this.data = body;
-        this.message = message;
-        this.total = total;
-        this.page = page;
-        this.pageSize = pageSize;
-        this.code = code;
+        this.timestamp = System.currentTimeMillis();
     }
 
     /**
@@ -137,7 +118,7 @@ public class CodeResult<T> extends ResponseEntity<T> implements Serializable {
      * @return
      */
     public static CodeResult OK() {
-        return new CodeResult(HttpStatusCode.valueOf(200));
+        return new CodeResult(HttpStatus.OK);
     }
 
     /**
@@ -147,123 +128,257 @@ public class CodeResult<T> extends ResponseEntity<T> implements Serializable {
      * @param <T>
      */
     public static <T> CodeResult OK(T data) {
-        return new CodeResult(data,HttpStatusCode.valueOf(200),ResultMessageEnum.SYSTEM_SUCCESS.getValue(),ResultStatusEnum.SUCCESS.getCode());
+        return new CodeResult(HttpStatus.OK,data);
+    }
+
+    /**
+     * OK
+     * @param data data
+     * @param status HttpStatus
+     * @return
+     * @param <T>
+     */
+    public static <T> CodeResult OK(T data, HttpStatus status) {
+        return new CodeResult(status,data);
+    }
+
+    /**
+     * OK
+     * @param data data
+     * @param message message
+     * @return
+     * @param <T>
+     */
+    public static <T> CodeResult OK(T data,String message) {
+        return new CodeResult(HttpStatus.OK,data,message,ResultStatusEnum.SUCCESS.getCode());
+    }
+
+    /**
+     * OK
+     * @param data data
+     * @param message message
+     * @param status HttpStatus
+     * @return
+     * @param <T>
+     */
+    public static <T> CodeResult OK(T data,String message, HttpStatus status) {
+        return new CodeResult(status,data,message,ResultStatusEnum.SUCCESS.getCode());
+    }
+
+    /**
+     * OK
+     * @param data data
+     * @param message message
+     * @param code code
+     * @return
+     * @param <T>
+     */
+    public static <T> CodeResult OK(T data,String message,Integer code) {
+        return new CodeResult(HttpStatus.OK,data,message,code);
+    }
+
+    /**
+     * OK
+     * @param data data
+     * @param message message
+     * @param code code
+     * @param status HttpStatus
+     * @return
+     * @param <T>
+     */
+    public static <T> CodeResult OK(T data,String message,Integer code, HttpStatus status) {
+        return new CodeResult(status,data,message,code);
+    }
+
+    /**
+     * OK
+     * @param data data
+     * @param type MediaType
+     * @return
+     * @param <T>
+     */
+    public static <T> CodeResult OK(T data, MediaType type) {
+        return new CodeResult(null,data,type,null);
+    }
+
+    /**
+     * OK
+     * @param data data
+     * @param type MediaType
+     * @param status HttpStatus
+     * @return
+     * @param <T>
+     */
+    public static <T> CodeResult OK(T data, MediaType type,HttpStatus status ) {
+        return new CodeResult(status,data,type,null);
+    }
+
+    /**
+     * OK
+     * @param data data
+     * @param type type
+     * @param headers HttpHeaders
+     * @return
+     * @param <T>
+     */
+    public static <T> CodeResult OK(T data, @Nullable MediaType type, @Nullable MultiValueMap<String, String> headers) {
+        return new CodeResult(null,data,type,headers);
+    }
+
+    /**
+     * OK
+     * @param data data
+     * @param type type
+     * @param headers HttpHeaders
+     * @param status HttpStatus
+     * @return
+     * @param <T>
+     */
+    public static <T> CodeResult OK(T data, @Nullable MediaType type, @Nullable MultiValueMap<String, String> headers, HttpStatus status) {
+        return new CodeResult(status,data,type,headers);
+    }
+
+    /**
+     * OK
+     * @param data data
+     * @param total total
+     * @param page page
+     * @param pageSize pageSize
+     * @return
+     * @param <T>
+     */
+    public static <T> CodeResult OK(T data, Long total, Long page, Long pageSize) {
+        return new CodeResult(null,data,total,page,pageSize,null,null,null,null);
+    }
+
+    /**
+     * OK
+     * @param data data
+     * @param total total
+     * @param page page
+     * @param pageSize pageSize
+     * @param message message
+     * @param code code
+     * @return
+     * @param <T>
+     */
+    public static <T> CodeResult OK(T data, Long total, Long page, Long pageSize,String message, Integer code) {
+        return new CodeResult(null,data,total,page,pageSize,message,code,null,null);
+    }
+
+    /**
+     * OK
+     * @param data DATA
+     * @param total total
+     * @param page page
+     * @param pageSize pageSize
+     * @param message message
+     * @param code code
+     * @param type MediaType
+     * @param headers HttpHeaders
+     * @return
+     * @param <T>
+     */
+    public static <T> CodeResult OK(T data ,Long total, Long page, Long pageSize,String message, Integer code, @Nullable MediaType type, @Nullable  MultiValueMap<String, String> headers) {
+        return new CodeResult(null,data,total,page,pageSize,message,code,type,headers);
+    }
+
+    /**
+     * OKWithMediaTypeAndHeaders
+     * @param data data
+     * @param type MediaType
+     * @param headers HttpHeaders
+     * @param status HttpStatus
+     * @return
+     * @param <T>
+     */
+    public static <T> CodeResult OKWithMediaTypeAndHeaders(T data, @Nullable MediaType type, @Nullable MultiValueMap<String, String> headers, HttpStatus status) {
+        return new CodeResult(status,data,type,headers);
+    }
+
+    /**
+     * OKWithMediaTypeAndHeaders
+     * @param data data
+     * @param type MediaType
+     * @param headers HttpHeaders
+     * @return
+     * @param <T>
+     */
+    public static <T> CodeResult OKWithMediaTypeAndHeaders(T data, @Nullable MediaType type, @Nullable MultiValueMap<String, String> headers) {
+        return new CodeResult(null,data,type,headers);
+    }
+
+    /**
+     * OK
+     * @param status HttpStatus
+     * @return
+     * @param <T>
+     */
+    public static <T> CodeResult OKOnlyStatus(HttpStatus status) {
+        return new CodeResult(status);
     }
 
     /**
      * OK
      * @param data
-     * @param message
      * @return
      * @param <T>
      */
-    public static <T> CodeResult OK(T data, String message) {
-        return new CodeResult(data, HttpStatusCode.valueOf(200), message,ResultStatusEnum.SUCCESS.getCode());
+    public static <T> CodeResult OKWithoutStatus(T data) {
+        CodeResult codeResult = new CodeResult(HttpStatus.OK, data);
+        codeResult.setStatus(null);
+        return codeResult;
     }
-
-    /**
-     * OK
-     * @param data
-     * @param message
-     * @param code
-     * @return
-     * @param <T>
-     */
-    public static <T> CodeResult OK(T data, String message, Integer code) {
-        return new CodeResult(data, HttpStatusCode.valueOf(200), message, code);
-    }
-
-    /**
-     * OK
-     * @param data
-     * @param message
-     * @param total
-     * @param page
-     * @param pageSize
-     * @return
-     * @param <T>
-     */
-    public static <T> CodeResult OK(T data, String message, Long total, Long page, Long pageSize) {
-        return new CodeResult(data, HttpStatusCode.valueOf(200), message, total, page, pageSize);
-    }
-
-    /**
-     * OK
-     * @param data
-     * @param message
-     * @param total
-     * @param page
-     * @param pageSize
-     * @param code
-     * @return
-     * @param <T>
-     */
-    public static <T> CodeResult OK(T data, String message, Long total, Long page, Long pageSize, Integer code) {
-        return new CodeResult(data, HttpStatusCode.valueOf(200), message, total, page, pageSize, code);
-    }
-
-    /**
-     * OK
-     * @param message
-     * @param code
-     * @return
-     */
-    public static CodeResult OK(String message, Integer code) {
-        return new CodeResult(null, HttpStatusCode.valueOf(200), message, code);
-    }
-
-    /**
-     * OK
-     * @param body
-     * @param headers
-     * @param rawStatus
-     * @return
-     * @param <T>
-     */
-    public static <T> CodeResult OK(@Nullable T body, MultiValueMap<String, String> headers, int rawStatus) {
-        return new CodeResult(body, headers, rawStatus);
-    }
-
-    /**
-     * OK
-     * @param headers
-     * @param status
-     * @return
-     */
-    public static CodeResult OK(@Nullable MultiValueMap<String, String> headers, HttpStatusCode status) {
-        return new CodeResult(headers, HttpStatusCode.valueOf(status.value()));
-    }
-
-    /**
-     * OK
-     * @param body
-     * @param headers
-     * @param statusCode
-     * @return
-     * @param <T>
-     */
-    public static <T> CodeResult OK(@Nullable T body, MultiValueMap<String, String> headers, HttpStatusCode statusCode) {
-        return new CodeResult(body, headers, statusCode);
-    }
-
 
     /**
      * ERROR
-     * @param message
-     * @param status
-     * @return
+      * @return
      */
-    public static CodeResult ERROR(String message, HttpStatus status) {
-        return new CodeResult(null, HttpStatusCode.valueOf(status.value()), ResultStatusEnum.FAIL.getCode());
+    public static CodeResult ERROR() {
+        return new CodeResult(HttpStatus.BAD_REQUEST,null, ResultMessageEnum.SYSTEM_ERROR.getValue(), ResultStatusEnum.FAIL.getCode());
     }
 
     /**
      * ERROR
-     * @param message
+     * @param message message
      * @return
      */
     public static CodeResult ERROR(String message) {
-        return new CodeResult(null, HttpStatusCode.valueOf(400), message, ResultStatusEnum.FAIL.getCode());
+        return new CodeResult(HttpStatus.BAD_REQUEST,null,message,ResultStatusEnum.FAIL.getCode());
     }
+
+    /**
+     * ERROR
+     * @param status HttpStatus
+     * @param message message
+     * @return
+     */
+    public static CodeResult ERROR(HttpStatus status,String message) {
+        return new CodeResult(status,null, message, ResultStatusEnum.FAIL.getCode());
+    }
+
+    /**
+     * ERROR
+     * @param status HttpStatus
+     * @param message message
+     * @param code code
+     * @return
+     */
+    public static CodeResult ERROR(HttpStatus status,String message,Integer code) {
+        return new CodeResult(status,null, message, code);
+    }
+
+    /**
+     * ERROR
+     * @param status HttpStatus
+     * @param type  MediaType
+     * @param headers HttpHeaders
+     * @return
+     */
+    public static CodeResult ERROR(HttpStatus status,@Nullable MediaType type, @Nullable MultiValueMap<String, String> headers) {
+        return new CodeResult(status,null, type, headers);
+    }
+
+
 
 }

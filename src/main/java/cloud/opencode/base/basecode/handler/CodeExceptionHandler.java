@@ -27,7 +27,7 @@ public class CodeExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public CodeResult handleIllegalArgumentException(IllegalArgumentException e) {
         log.error("Error is:{}, Error Info:{}", "Params error.", e.getLocalizedMessage());
-        return CodeResult.ERROR("Params error,"+ e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        return CodeResult.ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Params error,"+ e.getLocalizedMessage());
     }
 
     /**
@@ -38,7 +38,7 @@ public class CodeExceptionHandler {
     @ExceptionHandler(SecurityException.class)
     public CodeResult handleSecurityException(SecurityException e) {
         log.error("Error is:{}, Error Info:{}", "No access allowed.", e.getLocalizedMessage());
-        return CodeResult.ERROR("No access allowed."+ e.getLocalizedMessage(), HttpStatus.UNAUTHORIZED);
+        return CodeResult.ERROR(HttpStatus.UNAUTHORIZED, "No access allowed,"+ e.getLocalizedMessage());
     }
 
     /**
@@ -49,7 +49,7 @@ public class CodeExceptionHandler {
     @ExceptionHandler(NullPointerException.class)
     public CodeResult handleNullPointerException(NullPointerException e) {
         log.error("Error is:{}, Error Info:{}", "Null pointer exception.", e.getLocalizedMessage());
-        return CodeResult.ERROR("Null pointer exception."+ e.getLocalizedMessage(), HttpStatus.SERVICE_UNAVAILABLE);
+        return CodeResult.ERROR(HttpStatus.SERVICE_UNAVAILABLE, "Null pointer exception,"+ e.getLocalizedMessage());
     }
 
     /**
@@ -60,7 +60,7 @@ public class CodeExceptionHandler {
     @ExceptionHandler(NoHandlerFoundException.class)
     public CodeResult handlerNoFoundException(NoHandlerFoundException e) {
         log.error("Error is:{}，Error Info:{}", "NOT FOUND.", e.getLocalizedMessage());
-        return CodeResult.ERROR("NOT FOUND."+ e.getLocalizedMessage(), HttpStatus.NOT_FOUND);
+        return CodeResult.ERROR(HttpStatus.NOT_FOUND, "NOT FOUND,"+ e.getLocalizedMessage());
     }
 
     /**
@@ -71,7 +71,7 @@ public class CodeExceptionHandler {
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
     public CodeResult handlerHttpMediaTypeNotSupportedException(HttpMediaTypeNotSupportedException e) {
         log.error("Error is:{}, Error Info:{}", "Request type is not supported.", e.getLocalizedMessage());
-        return CodeResult.ERROR("Unsupported media type,"+ e.getLocalizedMessage(), HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+        return CodeResult.ERROR(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Unsupported media type,"+ e.getLocalizedMessage());
     }
 
     /**
@@ -81,8 +81,8 @@ public class CodeExceptionHandler {
      */
     @ExceptionHandler(CodeException.class)
     public CodeResult handleCodeException(CodeException e) {
-        log.error("Error is:{}, Error Info:{}", e.getLocalizedMessage(), e.getErrorInfo());
-        return CodeResult.ERROR( e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        log.error("Error is:{}, Error Info:{}", e.getLocalizedMessage(), e.getLocalizedMessage());
+        return CodeResult.ERROR(HttpStatus.INTERNAL_SERVER_ERROR,  e.getLocalizedMessage());
     }
 
     /**
@@ -93,7 +93,7 @@ public class CodeExceptionHandler {
     @ExceptionHandler(RuntimeException.class)
     public CodeResult handleRuntimeException(RuntimeException e) {
         log.error("Error is:{}, Error Info:{}", "RuntimeException.", e.getLocalizedMessage());
-        return CodeResult.ERROR( e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        return CodeResult.ERROR(HttpStatus.INTERNAL_SERVER_ERROR,  e.getLocalizedMessage());
     }
 
     /**
@@ -104,6 +104,6 @@ public class CodeExceptionHandler {
     @ExceptionHandler(Exception.class)
     public CodeResult handleException(Exception e) {
         log.error("Error is:{}, Error Info:{}", "Error.", e.getLocalizedMessage());
-        return CodeResult.ERROR( e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        return CodeResult.ERROR(HttpStatus.INTERNAL_SERVER_ERROR,  e.getLocalizedMessage());
     }
 }

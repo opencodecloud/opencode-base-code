@@ -48,8 +48,7 @@ public class CodeExceptionHandlerResolver implements HandlerExceptionResolver {
     @Override
     public ModelAndView resolveException(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o, Exception e) {
         String message = e.getLocalizedMessage();
-        if (e instanceof CodeException) {
-            CodeException ce = (CodeException) e;
+        if (e instanceof CodeException ce) {
             message = ce.getMessage();
         }
 
@@ -73,7 +72,7 @@ public class CodeExceptionHandlerResolver implements HandlerExceptionResolver {
             httpServletResponse.getWriter()
                     .write(
                             OBJECT_MAPPER.writeValueAsString(
-                                    CodeResult.ERROR(message, org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR)
+                                    CodeResult.ERROR(org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR, message)
                             )
                     );
         } catch (IOException ex) {

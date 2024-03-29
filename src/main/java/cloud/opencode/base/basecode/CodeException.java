@@ -1,9 +1,13 @@
 package cloud.opencode.base.basecode;
 
+import cloud.opencode.base.basecode.enums.ResultMessageEnum;
+import cloud.opencode.base.basecode.enums.ResultStatusEnum;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.http.HttpStatus;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.lang.Nullable;
 
 import java.io.Serial;
 
@@ -18,101 +22,93 @@ import java.io.Serial;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CodeException extends RuntimeException {
     @Serial
-    private static final long serialVersionUID = 5611411175819097882L;
+    private static final long serialVersionUID = -9137994707264363383L;
+    @Nullable
     private String message;
-    private String errorInfo;
-    private String status;
-    private Integer code = HttpStatus.SC_INTERNAL_SERVER_ERROR;
+    private HttpStatusCode status;
+    @Nullable
+    private Integer code = ResultStatusEnum.FAIL.getCode();
 
     /**
-     * CodeException with message
-     *
+     * CodeException
+     */
+    public CodeException() {
+        super(ResultMessageEnum.SYSTEM_ERROR.getValue());
+        this.message = ResultMessageEnum.SYSTEM_ERROR.getValue();
+        this.status = HttpStatus.INTERNAL_SERVER_ERROR;
+    }
+
+    /**
+     * CodeException
      * @param message message
      */
     public CodeException(String message) {
         super(message);
         this.message = message;
-        this.errorInfo = null;
+        this.status = HttpStatus.INTERNAL_SERVER_ERROR;
     }
 
     /**
-     * CodeException with message, errorInfo
-     *
-     * @param message   message
-     * @param errorInfo errorInfo
+     * CodeException
+     * @param message message
+     * @param status status
      */
-    public CodeException(String message, String errorInfo) {
+    public CodeException(String message, @Nullable HttpStatus status) {
         super(message);
         this.message = message;
-        this.errorInfo = errorInfo;
+        this.status = status;
     }
 
     /**
-     * CodeException with message, throwable
-     *
+     * CodeException
      * @param message message
-     * @param e       throwable
+     * @param e e
      */
-    public CodeException(String message, Throwable e) {
+    public CodeException(String message,@Nullable Throwable e) {
         super(message, e);
         this.message = message;
-        this.errorInfo = null;
+        this.status = HttpStatus.INTERNAL_SERVER_ERROR;
     }
 
+
     /**
-     * CodeException with message, code
-     *
+     * CodeException
      * @param message message
-     * @param code    error code
+     * @param status status
+     * @param code code
      */
-    public CodeException(String message, int code) {
+    public CodeException(String message, @Nullable HttpStatus status, @Nullable int code) {
         super(message);
         this.message = message;
-        this.errorInfo = null;
         this.code = code;
+        this.status = status;
     }
 
     /**
-     * CodeException with message, errorInfo, code
-     *
-     * @param message   message
-     * @param errorInfo error info
-     * @param code      error code
-     */
-    public CodeException(String message, String errorInfo, int code) {
-        super(message);
-        this.message = message;
-        this.errorInfo = errorInfo;
-        this.code = code;
-    }
-
-    /**
-     * CodeException with message, code, throwable
-     *
+     * CodeException
      * @param message message
-     * @param code    error code
-     * @param e       throwable
+     * @param code code
+     * @param e e
      */
-    public CodeException(String message, int code, Throwable e) {
+    public CodeException(String message, @Nullable int code, @Nullable Throwable e) {
         super(message, e);
         this.message = message;
-        this.errorInfo = null;
         this.code = code;
+        this.status = HttpStatus.INTERNAL_SERVER_ERROR;
     }
 
     /**
-     * CodeException with message, errorInfo, code, throwable
-     *
-     * @param message   message
-     * @param errorInfo error info
-     * @param code      code
-     * @param e         throwable
+     * CodeException
+     * @param message message
+     * @param status HttpStatus
+     * @param code code
+     * @param e e
      */
-    public CodeException(String message, String errorInfo, int code, Throwable e) {
+    public CodeException(String message, @Nullable HttpStatus status, @Nullable int code, @Nullable Throwable e) {
         super(message, e);
         this.message = message;
-        this.errorInfo = errorInfo;
         this.code = code;
+        this.status = status;
     }
 
 }
